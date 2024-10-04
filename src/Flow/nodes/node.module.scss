@@ -1,0 +1,90 @@
+$borderRadius: .20rem;
+$handleSize: 11px;
+
+
+.header {
+  background-color: white;
+  border-top-left-radius: $borderRadius;
+  border-top-right-radius: $borderRadius;
+}
+
+.body {
+  background-color: white;
+  border-bottom-left-radius: $borderRadius;
+  border-bottom-right-radius: $borderRadius;
+  padding: 5px 0;
+}
+
+.heading {
+  font-size: .8rem;
+  margin: 0;
+  padding: .25rem;
+  text-align: center;
+}
+
+.node {
+  // background-color: white;
+  color: black;
+  padding-bottom: .25rem;
+  height: 100%;
+  box-sizing: border-box;
+
+  :global(.react-flow__handle) {
+    position: static;
+    top: auto;
+    transform: none;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  padding: 0 .5rem;
+}
+
+.handles {
+  display: flex;
+  flex-direction: column;
+}
+
+.handleWithLabel {
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+}
+
+.source {
+  justify-content: flex-end;
+
+  :global(.react-flow__handle) {
+    margin-right: calc(-1 * $handleSize / 2);
+  }
+}
+
+.target {
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+
+  :global(.react-flow__handle) {
+    margin-left: calc(-1 * $handleSize / 2);
+  }
+}
+
+:global(.react-flow__handle) {
+  width: $handleSize;
+  height: $handleSize;
+  border: 1px solid white;
+  border-radius: 50%;
+}
+
+:global(.react-flow__handle).boolean {
+  background-color: red;
+}
+
+:global(.react-flow__handle).number {
+  background-color: green;
+}
+
+:global(.react-flow__handle).string {
+  background-color: blue;
+}
