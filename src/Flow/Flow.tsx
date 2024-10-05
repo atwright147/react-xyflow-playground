@@ -17,13 +17,14 @@ import {
 } from '@xyflow/react';
 import { useCallback, useState } from 'react';
 
+import { LogNode } from './nodes/LogNode';
+import { MathsNode } from './nodes/MathsNode';
 import { SourceNode } from './nodes/SourceNode';
 import { TextUpdaterNode } from './nodes/TextUpdaterNode';
 
 import '@xyflow/react/dist/style.css';
 
 import styles from './Flow.module.scss';
-import { MathsNode } from './nodes/MathsNode';
 
 export interface HandleConfig extends Omit<HandleProps, 'position'> {
   label: string;
@@ -48,6 +49,7 @@ const nodeTypes: NodeTypes = {
   target: SourceNode,
   concatenate: SourceNode,
   maths: MathsNode,
+  log: LogNode,
 };
 
 const initialNodes: Node<Data>[] = [
@@ -194,10 +196,37 @@ const initialNodes: Node<Data>[] = [
       valueType: 'number',
     },
   },
+  {
+    id: 'log-1',
+    type: 'log',
+    position: { x: 700, y: 100 },
+    data: {
+      label: 'Log',
+      headerBackground: 'blue',
+      headerForeground: 'white',
+      value: 0,
+      valueType: 'number',
+    },
+  },
 ];
 //#endregion
 
-const initialEdges: Edge[] = [];
+const initialEdges: Edge[] = [
+  {
+    source: 'text-1',
+    sourceHandle: 'text-1',
+    target: 'maths-1',
+    targetHandle: 'a',
+    id: 'xy-edge__text-1text-1-maths-1a',
+  },
+  {
+    source: 'text-2',
+    sourceHandle: 'text-2',
+    target: 'maths-1',
+    targetHandle: 'b',
+    id: 'xy-edge__text-2text-2-maths-1b',
+  },
+];
 
 export const Flow = (): JSX.Element => {
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
@@ -213,7 +242,7 @@ export const Flow = (): JSX.Element => {
     if (rfInstance) {
       const flow = rfInstance.toObject();
       console.group('Saved Data');
-      console.info(JSON.stringify(flow));
+      console.info(JSON.stringify(flow, null, 2));
       console.groupEnd();
     }
   }, [rfInstance]);
