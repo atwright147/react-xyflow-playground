@@ -1,6 +1,8 @@
 import { ReactFlowProvider } from '@xyflow/react';
-import './App.css';
 import { Flow } from './Flow/Flow';
+
+import '@xyflow/react/dist/style.css';
+import './App.css';
 
 function App() {
   return (

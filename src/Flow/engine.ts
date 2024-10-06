@@ -1,19 +1,28 @@
-import type { Edge, Node } from '@xyflow/react';
-import graph from './graph.json';
+import {
+  type Edge,
+  type EdgeChange,
+  type Node,
+  type NodeChange,
+  NodeProps,
+  ReactFlow,
+  applyEdgeChanges,
+  applyNodeChanges,
+} from '@xyflow/react';
+import React, { useCallback } from 'react';
 
-interface XYFlowNode extends Node {
-  data: {
-    label: string;
-    headerBackground: string;
-    headerForeground: string;
-    value: number;
-    valueType: string;
-  };
+interface XYFlowNodeData {
+  label: string;
+  headerBackground: string;
+  headerForeground: string;
+  value: number;
+  valueType: string;
+  operation?: 'add' | 'subtract' | 'multiply' | 'divide';
 }
 
-interface XYFlowEdge extends Edge {}
+export type XYFlowNode = Node<XYFlowNodeData>;
+export type XYFlowEdge = Edge;
 
-class XYFlowExecutionEngine {
+export class XYFlowExecutionEngine {
   private nodes: XYFlowNode[];
   private edges: XYFlowEdge[];
 
@@ -38,9 +47,31 @@ class XYFlowExecutionEngine {
       return;
     }
 
-    const a = inputNodes[0].data.value;
-    const b = inputNodes[1].data.value;
-    node.data.value = a + b; // For this example, we'll just add the two inputs
+    const a = +inputNodes[0].data.value;
+    const b = +inputNodes[1].data.value;
+
+    switch (node.data.operation) {
+      case 'add':
+        node.data.value = a + b;
+        break;
+      case 'subtract':
+        node.data.value = a - b;
+        break;
+      case 'multiply':
+        node.data.value = a * b;
+        break;
+      case 'divide':
+        if (b !== 0) {
+          node.data.value = a / b;
+        } else {
+          console.error(`Division by zero in Maths node ${node.id}`);
+          node.data.value = Number.NaN;
+        }
+        break;
+      default:
+        console.error(`Unknown operation in Maths node ${node.id}`);
+        break;
+    }
   }
 
   private updateLogNode(node: XYFlowNode): void {
@@ -102,16 +133,65 @@ class XYFlowExecutionEngine {
   }
 }
 
-// // Example usage
-// const nodes: XYFlowNode[] = [
-//   // ... (nodes from the provided example)
-// ];
+export function useXYFlowEngine(initialNodes: XYFlowNode[], initialEdges: XYFlowEdge[]) {
+  const [nodes, setNodes] = React.useState<XYFlowNode[]>(initialNodes);
+  const [edges, setEdges] = React.useState<XYFlowEdge[]>(initialEdges);
 
-// const edges: XYFlowEdge[] = [
-//   // ... (edges from the provided example)
-// ];
+  const onNodesChange = useCallback((changes: NodeChange[]) => {
+    setNodes((nds) => applyNodeChanges(changes, nds) as unknown as XYFlowNode[]);
+  }, []);
 
-// const engine = new XYFlowExecutionEngine(nodes, edges);
-const engine = new XYFlowExecutionEngine(graph.nodes, graph.edges);
-const updatedNodes = engine.execute();
-console.log(updatedNodes);
+  const onEdgesChange = useCallback((changes: EdgeChange[]) => {
+    setEdges((eds) => applyEdgeChanges(changes, eds));
+  }, []);
+
+  const executeGraph = useCallback(() => {
+    const engine = new XYFlowExecutionEngine(nodes, edges);
+    const updatedNodes = engine.execute();
+    setNodes(updatedNodes);
+  }, [nodes, edges]);
+
+  const updateNodeValue = useCallback((nodeId: string, newValue: number) => {
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id === nodeId) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              value: newValue,
+            },
+          };
+        }
+        return node;
+      }),
+    );
+  }, []);
+
+  const updateMathsOperation = useCallback((nodeId: string, operation: 'add' | 'subtract' | 'multiply' | 'divide') => {
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id === nodeId && node.type === 'maths') {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              operation,
+            },
+          };
+        }
+        return node;
+      }),
+    );
+  }, []);
+
+  return {
+    nodes,
+    edges,
+    onNodesChange,
+    onEdgesChange,
+    executeGraph,
+    updateNodeValue,
+    updateMathsOperation,
+  };
+}

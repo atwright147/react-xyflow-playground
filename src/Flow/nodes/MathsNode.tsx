@@ -10,7 +10,7 @@ export const MathsNode: FC<NodeProps<Data>> = (props): JSX.Element => {
   const [value, setValue] = useState(props.data.value as string);
 
   const onChange = useCallback(
-    (evt) => {
+    (evt: React.ChangeEvent<HTMLSelectElement>) => {
       setValue(evt.target.value);
       instance.setNodes((nodes) =>
         nodes.map((node) => {
@@ -19,6 +19,7 @@ export const MathsNode: FC<NodeProps<Data>> = (props): JSX.Element => {
               ...node,
               data: {
                 ...node.data,
+                operation: evt.target.value,
                 value: evt.target.value,
               },
             };
