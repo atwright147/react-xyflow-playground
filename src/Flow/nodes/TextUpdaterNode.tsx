@@ -8,7 +8,6 @@ import styles from './node.module.scss';
 export const TextUpdaterNode: FC<NodeProps<Data>> = (props): JSX.Element => {
   const instance = useReactFlow();
   const [value, setValue] = useState(props.data.value as string);
-  console.info(props);
 
   const onChange = useCallback(
     (event) => {
