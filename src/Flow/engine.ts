@@ -37,7 +37,9 @@ export class XYFlowExecutionEngine {
 
   private getInputNodes(nodeId: string): XYFlowNode[] {
     const inputEdges = this.edges.filter((edge) => edge.target === nodeId);
-    return inputEdges.map((edge) => this.getNodeById(edge.source)).filter((node): node is XYFlowNode => node !== undefined);
+    return inputEdges
+      .map((edge) => this.getNodeById(edge.source))
+      .filter((node): node is XYFlowNode => node !== undefined);
   }
 
   private updateMathsNode(node: XYFlowNode): void {
@@ -133,12 +135,17 @@ export class XYFlowExecutionEngine {
   }
 }
 
-export function useXYFlowEngine(initialNodes: XYFlowNode[], initialEdges: XYFlowEdge[]) {
+export function useXYFlowEngine(
+  initialNodes: XYFlowNode[],
+  initialEdges: XYFlowEdge[],
+) {
   const [nodes, setNodes] = React.useState<XYFlowNode[]>(initialNodes);
   const [edges, setEdges] = React.useState<XYFlowEdge[]>(initialEdges);
 
   const onNodesChange = useCallback((changes: NodeChange[]) => {
-    setNodes((nds) => applyNodeChanges(changes, nds) as unknown as XYFlowNode[]);
+    setNodes(
+      (nds) => applyNodeChanges(changes, nds) as unknown as XYFlowNode[],
+    );
   }, []);
 
   const onEdgesChange = useCallback((changes: EdgeChange[]) => {
@@ -168,22 +175,25 @@ export function useXYFlowEngine(initialNodes: XYFlowNode[], initialEdges: XYFlow
     );
   }, []);
 
-  const updateMathsOperation = useCallback((nodeId: string, operation: 'add' | 'subtract' | 'multiply' | 'divide') => {
-    setNodes((nds) =>
-      nds.map((node) => {
-        if (node.id === nodeId && node.type === 'maths') {
-          return {
-            ...node,
-            data: {
-              ...node.data,
-              operation,
-            },
-          };
-        }
-        return node;
-      }),
-    );
-  }, []);
+  const updateMathsOperation = useCallback(
+    (nodeId: string, operation: 'add' | 'subtract' | 'multiply' | 'divide') => {
+      setNodes((nds) =>
+        nds.map((node) => {
+          if (node.id === nodeId && node.type === 'maths') {
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                operation,
+              },
+            };
+          }
+          return node;
+        }),
+      );
+    },
+    [],
+  );
 
   return {
     nodes,

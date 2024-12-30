@@ -34,7 +34,9 @@ export const SourceNode: FC<NodeProps<Data>> = (props): JSX.Element => {
                 label={handle.label}
                 id={handle.id}
                 type={handle.type}
-                position={handle.type === 'source' ? Position.Right : Position.Left}
+                position={
+                  handle.type === 'source' ? Position.Right : Position.Left
+                }
               />
             ))}
           </div>

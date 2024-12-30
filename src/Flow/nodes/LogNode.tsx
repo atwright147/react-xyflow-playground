@@ -43,15 +43,35 @@ export const LogNode: FC<NodeProps<Data>> = (props): JSX.Element => {
         <div className={styles.body}>
           <div className={styles.node}>
             <div className={styles.field}>
-              <pre style={{ whiteSpace: 'pre-wrap', border: '1px solid black', borderRadius: '5px', padding: '0 5px', margin: '0' }}>
+              <pre
+                style={{
+                  whiteSpace: 'pre-wrap',
+                  border: '1px solid black',
+                  borderRadius: '5px',
+                  padding: '0 5px',
+                  margin: '0',
+                }}
+              >
                 {value}
               </pre>
             </div>
           </div>
 
           <div className={styles.handles}>
-            <CustomHandle label="In" id={props.id} type="target" position={Position.Left} valueType={props.data.valueType} />
-            <CustomHandle label="Out" id={props.id} type="source" position={Position.Right} valueType={props.data.valueType} />
+            <CustomHandle
+              label="In"
+              id={props.id}
+              type="target"
+              position={Position.Left}
+              valueType={props.data.valueType}
+            />
+            <CustomHandle
+              label="Out"
+              id={props.id}
+              type="source"
+              position={Position.Right}
+              valueType={props.data.valueType}
+            />
           </div>
         </div>
       </div>

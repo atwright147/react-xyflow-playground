@@ -47,7 +47,13 @@ export const MathsNode: FC<NodeProps<Data>> = (props): JSX.Element => {
         <div className={styles.body}>
           <div className={styles.node}>
             <div className={styles.field}>
-              <select aria-label={props.data.label} name="operator" onChange={onChange} value={value} className="nodrag">
+              <select
+                aria-label={props.data.label}
+                name="operator"
+                onChange={onChange}
+                value={value}
+                className="nodrag"
+              >
                 <option value="add">Add</option>
                 <option value="subtract">Subtract</option>
                 <option value="multiply">Multiply</option>
@@ -56,9 +62,27 @@ export const MathsNode: FC<NodeProps<Data>> = (props): JSX.Element => {
             </div>
           </div>
           <div className={styles.handles}>
-            <CustomHandle label="Value A" id="a" type="target" position={Position.Left} valueType="number" />
-            <CustomHandle label="Value B" id="b" type="target" position={Position.Left} valueType="number" />
-            <CustomHandle label="Output" id="o" type="source" position={Position.Right} valueType="number" />
+            <CustomHandle
+              label="Value A"
+              id="a"
+              type="target"
+              position={Position.Left}
+              valueType="number"
+            />
+            <CustomHandle
+              label="Value B"
+              id="b"
+              type="target"
+              position={Position.Left}
+              valueType="number"
+            />
+            <CustomHandle
+              label="Output"
+              id="o"
+              type="source"
+              position={Position.Right}
+              valueType="number"
+            />
           </div>
         </div>
       </div>

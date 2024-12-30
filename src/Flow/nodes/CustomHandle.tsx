@@ -9,7 +9,13 @@ interface CustomHandleProps extends HandleProps {
   valueType?: string;
 }
 
-export const CustomHandle: FC<CustomHandleProps> = ({ id, label, type, position, valueType = 'any' }): JSX.Element => {
+export const CustomHandle: FC<CustomHandleProps> = ({
+  id,
+  label,
+  type,
+  position,
+  valueType = 'any',
+}): JSX.Element => {
   return (
     <div
       className={classnames(styles.handleWithLabel, {

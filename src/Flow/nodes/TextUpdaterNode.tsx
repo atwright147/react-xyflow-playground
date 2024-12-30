@@ -46,11 +46,23 @@ export const TextUpdaterNode: FC<NodeProps<Data>> = (props): JSX.Element => {
         <div className={styles.body}>
           <div className={styles.node}>
             <div className={styles.field}>
-              <input aria-label={props.data.label} name="text" onChange={onChange} value={value} className="nodrag" />
+              <input
+                aria-label={props.data.label}
+                name="text"
+                onChange={onChange}
+                value={value}
+                className="nodrag"
+              />
             </div>
           </div>
           <div className={styles.handles}>
-            <CustomHandle label={props.data.label} id={props.id} type="source" position={Position.Right} valueType={props.data.valueType} />
+            <CustomHandle
+              label={props.data.label}
+              id={props.id}
+              type="source"
+              position={Position.Right}
+              valueType={props.data.valueType}
+            />
           </div>
         </div>
       </div>
