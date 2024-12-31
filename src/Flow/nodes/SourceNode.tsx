@@ -6,7 +6,9 @@ import { CustomHandle } from './CustomHandle';
 
 import styles from './node.module.scss';
 
-export const SourceNode: FC<NodeProps<Data>> = (props): JSX.Element => {
+export const SourceNode: FC<NodeProps<Data>> = (
+  props: NodeProps<Data>,
+): JSX.Element => {
   const onChange = useCallback((evt) => {
     console.log(evt.target.value);
   }, []);

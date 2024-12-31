@@ -1,31 +1,36 @@
 import { type NodeProps, Position, useReactFlow } from '@xyflow/react';
-import { type FC, useCallback, useEffect, useState } from 'react';
+import { type FC, useCallback, useState } from 'react';
 
 import type { Data } from '../Flow';
 import { CustomHandle } from './CustomHandle';
 import styles from './node.module.scss';
 
-export const LogNode: FC<NodeProps<Data>> = (props): JSX.Element => {
+export const LogNode: FC<NodeProps<Data>> = (
+  props: NodeProps<Data>,
+): JSX.Element => {
   const instance = useReactFlow();
   const [value, setValue] = useState(props.data.value as string);
 
-  useEffect(() => {
-    setValue(props.data.value);
-    instance.setNodes((nodes) =>
-      nodes.map((node) => {
-        if (node.id === props.id) {
-          return {
-            ...node,
-            data: {
-              ...node.data,
-              value: props.data.value,
-            },
-          };
-        }
-        return node;
-      }),
-    );
-  }, [instance.setNodes, props.id, props.data.value]);
+  const onChange = useCallback(
+    (event) => {
+      setValue(event.target.value);
+      instance.setNodes((nodes) =>
+        nodes.map((node) => {
+          if (node.id === props.id) {
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                value: event.target.value,
+              },
+            };
+          }
+          return node;
+        }),
+      );
+    },
+    [instance.setNodes, props.id],
+  );
 
   return (
     <>
