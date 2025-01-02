@@ -1,7 +1,7 @@
 import {
   type Edge,
   type HandleProps,
-  type Node,
+  type NodeData,
   type NodeTypes,
   type OnConnect,
   type OnEdgesChange,
@@ -29,17 +29,17 @@ export interface HandleConfig extends Omit<HandleProps, 'position'> {
   y: number;
 }
 
-export interface Data extends Node<Record<string, unknown>, string> {
-  [key: string]: unknown;
+// must be a type rather than an interface
+export type CustomNodeData = {
   label?: string;
   headerForeground?: string;
   headerBackground?: string;
   handles?: HandleConfig[];
   minWidth?: number;
   resizable?: boolean;
-  value?: unknown;
+  value?: string | number | boolean;
   valueType?: string;
-}
+};
 
 //#region Nodes Config
 const nodeTypes: NodeTypes = {
@@ -53,113 +53,6 @@ const nodeTypes: NodeTypes = {
 };
 
 const initialNodes: Node<Data>[] = [
-  // {
-  //   id: 'source',
-  //   type: 'source',
-  //   position: { x: 50, y: 200 },
-  //   data: {
-  //     minWidth: 250,
-  //     resizable: false,
-  //     label: 'Source',
-  //     headerForeground: 'white',
-  //     headerBackground: 'green',
-  //     handles: [
-  //       {
-  //         id: '1',
-  //         label: 'top',
-  //         type: 'source',
-  //       },
-  //       {
-  //         id: '2',
-  //         label: 'middle',
-  //         type: 'source',
-  //       },
-  //       {
-  //         id: '3',
-  //         label: 'bottom',
-  //         type: 'source',
-  //       },
-  //       {
-  //         id: '4',
-  //         label: 'bottom2',
-  //         type: 'source',
-  //       },
-  //       {
-  //         id: '5',
-  //         label: 'Bottom3',
-  //         type: 'source',
-  //       },
-  //     ],
-  //   },
-  // },
-  // {
-  //   id: 'target',
-  //   type: 'target',
-  //   position: { x: 300, y: 200 },
-  //   data: {
-  //     minWidth: 250,
-  //     resizable: false,
-  //     label: 'Target',
-  //     headerBackground: 'green',
-  //     headerForeground: 'white',
-  //     handles: [
-  //       {
-  //         id: '1',
-  //         label: 'top',
-  //         type: 'target',
-  //       },
-  //       {
-  //         id: '2',
-  //         label: 'middle',
-  //         type: 'target',
-  //       },
-  //       {
-  //         id: '3',
-  //         label: 'bottom',
-  //         type: 'target',
-  //       },
-  //       {
-  //         id: '4',
-  //         label: 'bottom2',
-  //         type: 'target',
-  //       },
-  //       {
-  //         id: '5',
-  //         label: 'Bottom3',
-  //         type: 'target',
-  //       },
-  //     ],
-  //   },
-  // },
-  // {
-  //   id: 'concatenate',
-  //   type: 'concatenate',
-  //   position: { x: 550, y: 200 },
-  //   data: {
-  //     minWidth: 250,
-  //     resizable: false,
-  //     label: 'Concatenate',
-  //     headerBackground: 'blue',
-  //     headerForeground: 'white',
-  //     handles: [
-  //       {
-  //         id: '1',
-  //         label: 'Value 1',
-  //         type: 'target',
-  //       },
-  //       {
-  //         id: '2',
-  //         label: 'Value 2',
-  //         type: 'target',
-  //       },
-  //       {
-  //         id: '3',
-  //         label: 'Output',
-  //         type: 'source',
-  //       },
-  //     ],
-  //   },
-  // },
   {
     id: 'text-1',
     type: 'textUpdater',

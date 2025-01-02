@@ -1,22 +1,23 @@
-import { type NodeProps, Position, useReactFlow } from '@xyflow/react';
+import { type Node, Position, useReactFlow } from '@xyflow/react';
 import { type FC, useCallback, useState } from 'react';
-import type { Data } from '../Flow';
+
+import type { CustomNodeData } from '../Flow';
 import { CustomHandle } from './CustomHandle';
 
 import styles from './node.module.scss';
 
-export const MathsNode: FC<NodeProps<Data>> = (
-  props: NodeProps<Data>,
-): JSX.Element => {
+type Props = Node<CustomNodeData, 'maths'>;
+
+export const MathsNode: FC<Props> = ({ data, id }): JSX.Element => {
   const instance = useReactFlow();
-  const [value, setValue] = useState(props.data.value as string);
+  const [value, setValue] = useState(data.value as string);
 
   const onChange = useCallback(
     (evt: React.ChangeEvent<HTMLSelectElement>) => {
       setValue(evt.target.value);
       instance.setNodes((nodes) =>
         nodes.map((node) => {
-          if (node.id === props.id) {
+          if (node.id === id) {
             return {
               ...node,
               data: {
@@ -30,7 +31,7 @@ export const MathsNode: FC<NodeProps<Data>> = (
         }),
       );
     },
-    [instance.setNodes, props.id],
+    [instance.setNodes, id],
   );
 
   return (
@@ -39,18 +40,18 @@ export const MathsNode: FC<NodeProps<Data>> = (
         <header
           className={styles.header}
           style={{
-            backgroundColor: props.data.headerBackground,
-            color: props.data.headerForeground,
+            backgroundColor: data.headerBackground,
+            color: data.headerForeground,
           }}
         >
-          <h1 className={styles.heading}>{props.data.label}</h1>
+          <h1 className={styles.heading}>{data.label}</h1>
         </header>
 
         <div className={styles.body}>
           <div className={styles.node}>
             <div className={styles.field}>
               <select
-                aria-label={props.data.label}
+                aria-label={data.label}
                 name="operator"
                 onChange={onChange}
                 value={value}

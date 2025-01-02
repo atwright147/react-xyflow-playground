@@ -1,36 +1,32 @@
-import { type NodeProps, NodeResizer, Position } from '@xyflow/react';
-import { type FC, useCallback } from 'react';
+import { type Node, NodeResizer, Position } from '@xyflow/react';
+import type { FC } from 'react';
 
-import type { Data } from '../Flow';
+import type { CustomNodeData } from '../Flow';
 import { CustomHandle } from './CustomHandle';
 
 import styles from './node.module.scss';
 
-export const SourceNode: FC<NodeProps<Data>> = (
-  props: NodeProps<Data>,
-): JSX.Element => {
-  const onChange = useCallback((evt) => {
-    console.log(evt.target.value);
-  }, []);
+type Props = Node<CustomNodeData, 'source'>;
 
+export const SourceNode: FC<Props> = ({ data }): JSX.Element => {
   return (
     <>
-      {props.data.resizable && <NodeResizer minWidth={200} />}
+      {data.resizable && <NodeResizer minWidth={200} />}
 
       <div className={styles.node} style={{ minWidth: '200px' }}>
         <header
           className={styles.header}
           style={{
-            backgroundColor: props.data.headerBackground,
-            color: props.data.headerForeground,
+            backgroundColor: data.headerBackground,
+            color: data.headerForeground,
           }}
         >
-          <h1 className={styles.heading}>{props.data.label}</h1>
+          <h1 className={styles.heading}>{data.label}</h1>
         </header>
 
         <div className={styles.body}>
           <div className={styles.handles}>
-            {props.data.handles?.map((handle) => (
+            {data.handles?.map((handle) => (
               <CustomHandle
                 key={handle.id}
                 label={handle.label}

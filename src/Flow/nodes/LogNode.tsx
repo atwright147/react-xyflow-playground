@@ -1,48 +1,25 @@
-import { type NodeProps, Position, useReactFlow } from '@xyflow/react';
-import { type FC, useCallback, useState } from 'react';
+import { type Node, Position } from '@xyflow/react';
+import type { FC } from 'react';
 
-import type { Data } from '../Flow';
+import type { CustomNodeData } from '../Flow';
 import { CustomHandle } from './CustomHandle';
+
 import styles from './node.module.scss';
 
-export const LogNode: FC<NodeProps<Data>> = (
-  props: NodeProps<Data>,
-): JSX.Element => {
-  const instance = useReactFlow();
-  const [value, setValue] = useState(props.data.value as string);
+type Props = Node<CustomNodeData, 'log'>;
 
-  const onChange = useCallback(
-    (event) => {
-      setValue(event.target.value);
-      instance.setNodes((nodes) =>
-        nodes.map((node) => {
-          if (node.id === props.id) {
-            return {
-              ...node,
-              data: {
-                ...node.data,
-                value: event.target.value,
-              },
-            };
-          }
-          return node;
-        }),
-      );
-    },
-    [instance.setNodes, props.id],
-  );
-
+export const LogNode: FC<Props> = ({ data, id }): JSX.Element => {
   return (
     <>
       <div className={styles.node} style={{ minWidth: '200px' }}>
         <header
           className={styles.header}
           style={{
-            backgroundColor: props.data.headerBackground,
-            color: props.data.headerForeground,
+            backgroundColor: data.headerBackground,
+            color: data.headerForeground,
           }}
         >
-          <h1 className={styles.heading}>{props.data.label}</h1>
+          <h1 className={styles.heading}>{data.label}</h1>
         </header>
 
         <div className={styles.body}>
@@ -57,7 +34,7 @@ export const LogNode: FC<NodeProps<Data>> = (
                   margin: '0',
                 }}
               >
-                {value}
+                {data.value}
               </pre>
             </div>
           </div>
@@ -65,17 +42,17 @@ export const LogNode: FC<NodeProps<Data>> = (
           <div className={styles.handles}>
             <CustomHandle
               label="In"
-              id={props.id}
+              id={id}
               type="target"
               position={Position.Left}
-              valueType={props.data.valueType}
+              valueType={data.valueType}
             />
             <CustomHandle
               label="Out"
-              id={props.id}
+              id={id}
               type="source"
               position={Position.Right}
-              valueType={props.data.valueType}
+              valueType={data.valueType}
             />
           </div>
         </div>
