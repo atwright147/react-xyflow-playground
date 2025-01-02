@@ -1,8 +1,7 @@
 import {
   type Edge,
   type HandleProps,
-  type NodeData,
-  type NodeTypes,
+  type Node,
   type OnConnect,
   type OnEdgesChange,
   type OnNodesChange,
@@ -39,10 +38,11 @@ export type CustomNodeData = {
   resizable?: boolean;
   value?: string | number | boolean;
   valueType?: string;
+  operation?: string;
 };
 
 //#region Nodes Config
-const nodeTypes: NodeTypes = {
+const nodeTypes = {
   textUpdater: TextUpdaterNode,
   source: SourceNode,
   target: SourceNode,
@@ -52,7 +52,7 @@ const nodeTypes: NodeTypes = {
   timesTwo: TimesTwoNode,
 };
 
-const initialNodes: Node<Data>[] = [
+const initialNodes: Node<CustomNodeData>[] = [
   {
     id: 'text-1',
     type: 'textUpdater',
@@ -219,7 +219,8 @@ export const Flow = (): JSX.Element => {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onInit={setRfInstance}
-        nodeTypes={nodeTypes}
+        // biome-ignore lint/suspicious/noExplicitAny: just for now
+        nodeTypes={nodeTypes as any}
       >
         {/* Add your custom node types here */}
       </ReactFlow>
