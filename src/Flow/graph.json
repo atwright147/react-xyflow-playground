@@ -27,7 +27,7 @@
         "y": 200
       },
       "data": {
-        "label": "Value",
+        "label": "Value 2",
         "headerBackground": "purple",
         "headerForeground": "white",
         "value": 10,
@@ -50,11 +50,32 @@
         "headerBackground": "blue",
         "headerForeground": "white",
         "value": 0,
-        "valueType": "number"
+        "valueType": "number",
+        "operation": "add"
       },
       "measured": {
         "width": 200,
         "height": 136
+      }
+    },
+    {
+      "id": "times-two-1",
+      "type": "timesTwo",
+      "position": {
+        "x": 400,
+        "y": 300
+      },
+      "data": {
+        "label": "Times Two",
+        "headerBackground": "blue",
+        "headerForeground": "white",
+        "value": 0,
+        "valueType": "number",
+        "operation": "add"
+      },
+      "measured": {
+        "width": 200,
+        "height": 113
       }
     },
     {
@@ -73,7 +94,45 @@
       },
       "measured": {
         "width": 200,
-        "height": 139
+        "height": 115
+      }
+    },
+    {
+      "id": "log-2",
+      "type": "log",
+      "position": {
+        "x": 700,
+        "y": 250
+      },
+      "data": {
+        "label": "Log",
+        "headerBackground": "blue",
+        "headerForeground": "white",
+        "value": 0,
+        "valueType": "number"
+      },
+      "measured": {
+        "width": 200,
+        "height": 115
+      }
+    },
+    {
+      "id": "log-3",
+      "type": "log",
+      "position": {
+        "x": 700,
+        "y": 400
+      },
+      "data": {
+        "label": "Log",
+        "headerBackground": "blue",
+        "headerForeground": "white",
+        "value": 0,
+        "valueType": "number"
+      },
+      "measured": {
+        "width": 200,
+        "height": 115
       }
     }
   ],
@@ -93,11 +152,32 @@
       "id": "xy-edge__text-2text-2-maths-1b"
     },
     {
+      "source": "text-1",
+      "sourceHandle": "text-1",
+      "target": "times-two-1",
+      "targetHandle": "times-two-1-in",
+      "id": "xy-edge__text-1text-1-times-two-1times-two-1-in"
+    },
+    {
       "source": "maths-1",
       "sourceHandle": "o",
       "target": "log-1",
       "targetHandle": "log-1",
       "id": "xy-edge__maths-1o-log-1log-1"
+    },
+    {
+      "source": "times-two-1",
+      "sourceHandle": "times-two-1-original",
+      "target": "log-2",
+      "targetHandle": "log-2",
+      "id": "xy-edge__times-two-1times-two-1-original-log-2log-2"
+    },
+    {
+      "source": "times-two-1",
+      "sourceHandle": "times-two-1-timesTwo",
+      "target": "log-3",
+      "targetHandle": "log-3",
+      "id": "xy-edge__times-two-1times-two-1-timesTwo-log-3log-3"
     }
   ],
   "viewport": {

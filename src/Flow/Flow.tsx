@@ -6,6 +6,7 @@ import {
   type OnConnect,
   type OnEdgesChange,
   type OnNodesChange,
+  type Position,
   ReactFlow,
   type ReactFlowInstance,
   addEdge,
@@ -13,21 +14,22 @@ import {
   applyNodeChanges,
   useReactFlow,
 } from '@xyflow/react';
+import { useCallback, useState } from 'react';
 
 import { LogNode } from './nodes/LogNode';
 import { MathsNode } from './nodes/MathsNode';
 import { SourceNode } from './nodes/SourceNode';
 import { TextUpdaterNode } from './nodes/TextUpdaterNode';
-
-import { useCallback, useState } from 'react';
-import styles from './Flow.module.scss';
 import { TimesTwoNode } from './nodes/TimesTwoNode';
 
 export interface HandleConfig extends Omit<HandleProps, 'position'> {
   label: string;
+  position: Position;
+  x: number;
+  y: number;
 }
 
-export interface Data {
+export interface Data extends Node<Record<string, unknown>, string> {
   [key: string]: unknown;
   label?: string;
   headerForeground?: string;
@@ -196,7 +198,7 @@ const initialNodes: Node<Data>[] = [
     },
   },
   {
-    id: 'tomes-two-1',
+    id: 'times-two-1',
     type: 'timesTwo',
     position: { x: 400, y: 300 },
     data: {
@@ -212,6 +214,30 @@ const initialNodes: Node<Data>[] = [
     id: 'log-1',
     type: 'log',
     position: { x: 700, y: 100 },
+    data: {
+      label: 'Log',
+      headerBackground: 'blue',
+      headerForeground: 'white',
+      value: 0,
+      valueType: 'number',
+    },
+  },
+  {
+    id: 'log-2',
+    type: 'log',
+    position: { x: 700, y: 250 },
+    data: {
+      label: 'Log',
+      headerBackground: 'blue',
+      headerForeground: 'white',
+      value: 0,
+      valueType: 'number',
+    },
+  },
+  {
+    id: 'log-3',
+    type: 'log',
+    position: { x: 700, y: 400 },
     data: {
       label: 'Log',
       headerBackground: 'blue',
@@ -298,12 +324,16 @@ export const Flow = (): JSX.Element => {
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        onInit={setRfInstance}
         nodeTypes={nodeTypes}
       >
         {/* Add your custom node types here */}
       </ReactFlow>
       <div style={{ position: 'absolute', top: 10, right: 10 }}>
-        <button type="button">Execute Graph</button>
+        <button type="button" onClick={onSave}>
+          Save
+        </button>
       </div>
     </div>
   );

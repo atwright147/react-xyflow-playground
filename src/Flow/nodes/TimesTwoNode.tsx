@@ -65,21 +65,21 @@ export const TimesTwoNode: FC<NodeProps<Data>> = (
           <div className={styles.handles}>
             <CustomHandle
               label="In"
-              id={props.id}
+              id={`${props.id}-in`}
               type="target"
               position={Position.Left}
               valueType={props.data.valueType}
             />
             <CustomHandle
               label="Original"
-              id={props.id}
+              id={`${props.id}-original`}
               type="source"
               position={Position.Right}
               valueType={props.data.valueType}
             />
             <CustomHandle
               label="TimesTwo"
-              id={props.id}
+              id={`${props.id}-timesTwo`}
               type="source"
               position={Position.Right}
               valueType={props.data.valueType}

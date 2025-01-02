@@ -1,207 +1,255 @@
-import {
-  type Edge,
-  type EdgeChange,
-  type Node,
-  type NodeChange,
-  NodeProps,
-  ReactFlow,
-  applyEdgeChanges,
-  applyNodeChanges,
-} from '@xyflow/react';
-import React, { useCallback } from 'react';
+import type { Edge, Node, Viewport } from '@xyflow/react';
 
-interface XYFlowNodeData {
+interface CustomNodeData extends Record<string, unknown> {
   label: string;
   headerBackground: string;
   headerForeground: string;
   value: number;
   valueType: string;
-  operation?: 'add' | 'subtract' | 'multiply' | 'divide';
+  operation?: string;
 }
 
-export type XYFlowNode = Node<XYFlowNodeData>;
-export type XYFlowEdge = Edge;
+type NodeTypes = 'textUpdater' | 'maths' | 'timesTwo' | 'log';
 
-export class XYFlowExecutionEngine {
-  private nodes: XYFlowNode[];
-  private edges: XYFlowEdge[];
+interface CustomNode extends Node<CustomNodeData> {
+  type: NodeTypes;
+}
 
-  constructor(nodes: XYFlowNode[], edges: XYFlowEdge[]) {
-    this.nodes = nodes;
-    this.edges = edges;
+interface NodeOutput {
+  [handle: string]: number;
+}
+
+interface ExecutionResults {
+  allResults: Record<string, NodeOutput>;
+  finalOutputs: Record<string, NodeOutput>;
+}
+
+export interface FlowGraph {
+  nodes: CustomNode[];
+  edges: Edge[];
+  viewport: Viewport;
+}
+
+class GraphExecutor {
+  private nodes: Map<string, CustomNode>;
+  private edges: Edge[];
+  private executionResults: Map<string, NodeOutput>;
+  private finalOutputs: Set<string>;
+
+  constructor(graph: FlowGraph) {
+    this.nodes = new Map(graph.nodes.map((node) => [node.id, node]));
+    this.edges = graph.edges;
+    this.executionResults = new Map();
+    this.finalOutputs = new Set();
   }
 
-  private getNodeById(id: string): XYFlowNode | undefined {
-    return this.nodes.find((node) => node.id === id);
-  }
+  private getNodeInputs(nodeId: string): Record<string, number> {
+    const inputs: Record<string, number> = {};
+    const incomingEdges = this.edges.filter((edge) => edge.target === nodeId);
 
-  private getInputNodes(nodeId: string): XYFlowNode[] {
-    const inputEdges = this.edges.filter((edge) => edge.target === nodeId);
-    return inputEdges
-      .map((edge) => this.getNodeById(edge.source))
-      .filter((node): node is XYFlowNode => node !== undefined);
-  }
-
-  private updateMathsNode(node: XYFlowNode): void {
-    const inputNodes = this.getInputNodes(node.id);
-    if (inputNodes.length !== 2) {
-      console.error(`Maths node ${node.id} should have exactly 2 inputs`);
-      return;
+    for (const edge of incomingEdges) {
+      const sourceResults = this.executionResults.get(edge.source);
+      if (sourceResults && edge.sourceHandle) {
+        inputs[edge.targetHandle ?? ''] = sourceResults[edge.sourceHandle];
+      }
     }
 
-    const a = +inputNodes[0].data.value;
-    const b = +inputNodes[1].data.value;
+    return inputs;
+  }
 
-    switch (node.data.operation) {
-      case 'add':
-        node.data.value = a + b;
+  private executeNode(nodeId: string): NodeOutput {
+    const node = this.nodes.get(nodeId);
+    if (!node) {
+      throw new Error(`Node not found: ${nodeId}`);
+    }
+
+    const inputs = this.getNodeInputs(nodeId);
+    const outputs: NodeOutput = {};
+
+    switch (node.type) {
+      case 'textUpdater': {
+        // Text updater has a single output with the same handle as its id
+        outputs[`${node.id}`] = node.data.value;
         break;
-      case 'subtract':
-        node.data.value = a - b;
-        break;
-      case 'multiply':
-        node.data.value = a * b;
-        break;
-      case 'divide':
-        if (b !== 0) {
-          node.data.value = a / b;
-        } else {
-          console.error(`Division by zero in Maths node ${node.id}`);
-          node.data.value = Number.NaN;
+      }
+
+      case 'maths': {
+        const a = inputs.a ?? 0;
+        const b = inputs.b ?? 0;
+        let result: number;
+
+        switch (node.data.operation) {
+          case 'add':
+            result = a + b;
+            break;
+          case 'subtract':
+            result = a - b;
+            break;
+          case 'multiply':
+            result = a * b;
+            break;
+          case 'divide':
+            if (b === 0) throw new Error('Division by zero');
+            result = a / b;
+            break;
+          default:
+            throw new Error(`Unknown math operation: ${node.data.operation}`);
         }
+
+        outputs.o = result;
         break;
+      }
+
+      case 'timesTwo': {
+        const input = inputs['times-two-1-in'] ?? 0;
+        // Output both the original value and the doubled value
+        outputs['times-two-1-original'] = input;
+        outputs['times-two-1-timesTwo'] = input * 2;
+        break;
+      }
+
+      case 'log': {
+        const logInput = inputs[node.id] ?? 0;
+        // console.log(`Log node ${nodeId}:`, logInput);
+        outputs[node.id] = logInput;
+        break;
+      }
+
       default:
-        console.error(`Unknown operation in Maths node ${node.id}`);
-        break;
-    }
-  }
-
-  private updateLogNode(node: XYFlowNode): void {
-    const inputNodes = this.getInputNodes(node.id);
-    if (inputNodes.length !== 1) {
-      console.error(`Log node ${node.id} should have exactly 1 input`);
-      return;
+        throw new Error(`Unknown node type: ${node.type}`);
     }
 
-    const input = inputNodes[0].data.value;
-    console.log(`Log node ${node.id}: ${input}`);
-    node.data.value = input;
+    this.executionResults.set(nodeId, outputs);
+    return outputs;
   }
 
-  public execute(): XYFlowNode[] {
-    const sortedNodes = this.topologicalSort();
-
-    for (const node of sortedNodes) {
-      switch (node.type) {
-        case 'maths':
-          this.updateMathsNode(node);
-          break;
-        case 'log':
-          this.updateLogNode(node);
-          break;
-        default:
-          // For other node types (e.g., textUpdater), we don't need to do anything
-          break;
-      }
-    }
-
-    return this.nodes;
+  private findStartNodes(): string[] {
+    const nodesWithIncoming = new Set(this.edges.map((edge) => edge.target));
+    return Array.from(this.nodes.keys()).filter(
+      (nodeId) => !nodesWithIncoming.has(nodeId),
+    );
   }
 
-  private topologicalSort(): XYFlowNode[] {
+  private findEndNodes(): string[] {
+    const nodesWithOutgoing = new Set(this.edges.map((edge) => edge.source));
+    return Array.from(this.nodes.keys()).filter(
+      (nodeId) => !nodesWithOutgoing.has(nodeId),
+    );
+  }
+
+  private getNextNodes(nodeId: string): string[] {
+    return this.edges
+      .filter((edge) => edge.source === nodeId)
+      .map((edge) => edge.target);
+  }
+
+  execute(): ExecutionResults {
+    this.validateGraph();
+    const queue: string[] = [...this.findStartNodes()];
     const visited = new Set<string>();
-    const stack: XYFlowNode[] = [];
+    const inDegree = new Map<string, number>();
 
-    const visit = (nodeId: string) => {
-      if (visited.has(nodeId)) return;
-      visited.add(nodeId);
+    // Calculate in-degree for each node
+    for (const edge of this.edges) {
+      inDegree.set(edge.target, (inDegree.get(edge.target) ?? 0) + 1);
+    }
 
-      const outgoingEdges = this.edges.filter((edge) => edge.source === nodeId);
-      for (const edge of outgoingEdges) {
-        visit(edge.target);
+    // Execute nodes in BFS order
+    while (queue.length > 0) {
+      const currentNodeId = queue.shift();
+      if (!currentNodeId || visited.has(currentNodeId)) continue;
+
+      // Check if all inputs are ready
+      const requiredInputs = inDegree.get(currentNodeId) ?? 0;
+      const availableInputs = this.edges
+        .filter((edge) => edge.target === currentNodeId)
+        .filter((edge) => this.executionResults.has(edge.source)).length;
+
+      if (availableInputs < requiredInputs) {
+        queue.push(currentNodeId); // Put back in queue
+        continue;
       }
 
-      const node = this.getNodeById(nodeId);
-      if (node) stack.unshift(node);
+      try {
+        this.executeNode(currentNodeId);
+        visited.add(currentNodeId);
+
+        // Add next nodes to queue
+        const nextNodes = this.getNextNodes(currentNodeId);
+        queue.push(...nextNodes);
+      } catch (error) {
+        throw new Error(`Error executing node ${currentNodeId}: ${error}`);
+      }
+    }
+
+    // Identify final outputs
+    const endNodes = this.findEndNodes();
+    for (const nodeId of endNodes) {
+      this.finalOutputs.add(nodeId);
+    }
+
+    return {
+      allResults: Object.fromEntries(this.executionResults),
+      finalOutputs: Object.fromEntries(
+        Array.from(this.finalOutputs).map((nodeId) => [
+          nodeId,
+          this.executionResults.get(nodeId) ?? {},
+        ]),
+      ),
+    };
+  }
+
+  validateGraph(): void {
+    // Validate nodes and edges
+    for (const edge of this.edges) {
+      if (!this.nodes.has(edge.source)) {
+        throw new Error(
+          `Edge references non-existent source node: ${edge.source}`,
+        );
+      }
+      if (!this.nodes.has(edge.target)) {
+        throw new Error(
+          `Edge references non-existent target node: ${edge.target}`,
+        );
+      }
+      if (!edge.sourceHandle) {
+        throw new Error(`Edge from ${edge.source} is missing sourceHandle`);
+      }
+      if (!edge.targetHandle) {
+        throw new Error(`Edge to ${edge.target} is missing targetHandle`);
+      }
+    }
+
+    // Check for cycles
+    const visited = new Set<string>();
+    const recursionStack = new Set<string>();
+
+    const hasCycle = (nodeId: string): boolean => {
+      if (recursionStack.has(nodeId)) return true;
+      if (visited.has(nodeId)) return false;
+
+      visited.add(nodeId);
+      recursionStack.add(nodeId);
+
+      const neighbors = this.getNextNodes(nodeId);
+      for (const neighbor of neighbors) {
+        if (hasCycle(neighbor)) return true;
+      }
+
+      recursionStack.delete(nodeId);
+      return false;
     };
 
-    for (const node of this.nodes) {
-      if (!visited.has(node.id)) {
-        visit(node.id);
+    for (const nodeId of this.nodes.keys()) {
+      if (hasCycle(nodeId)) {
+        throw new Error('Graph contains cycles');
       }
     }
-
-    return stack;
   }
 }
 
-export function useXYFlowEngine(
-  initialNodes: XYFlowNode[],
-  initialEdges: XYFlowEdge[],
-) {
-  const [nodes, setNodes] = React.useState<XYFlowNode[]>(initialNodes);
-  const [edges, setEdges] = React.useState<XYFlowEdge[]>(initialEdges);
-
-  const onNodesChange = useCallback((changes: NodeChange[]) => {
-    setNodes(
-      (nds) => applyNodeChanges(changes, nds) as unknown as XYFlowNode[],
-    );
-  }, []);
-
-  const onEdgesChange = useCallback((changes: EdgeChange[]) => {
-    setEdges((eds) => applyEdgeChanges(changes, eds));
-  }, []);
-
-  const executeGraph = useCallback(() => {
-    const engine = new XYFlowExecutionEngine(nodes, edges);
-    const updatedNodes = engine.execute();
-    setNodes(updatedNodes);
-  }, [nodes, edges]);
-
-  const updateNodeValue = useCallback((nodeId: string, newValue: number) => {
-    setNodes((nds) =>
-      nds.map((node) => {
-        if (node.id === nodeId) {
-          return {
-            ...node,
-            data: {
-              ...node.data,
-              value: newValue,
-            },
-          };
-        }
-        return node;
-      }),
-    );
-  }, []);
-
-  const updateMathsOperation = useCallback(
-    (nodeId: string, operation: 'add' | 'subtract' | 'multiply' | 'divide') => {
-      setNodes((nds) =>
-        nds.map((node) => {
-          if (node.id === nodeId && node.type === 'maths') {
-            return {
-              ...node,
-              data: {
-                ...node.data,
-                operation,
-              },
-            };
-          }
-          return node;
-        }),
-      );
-    },
-    [],
-  );
-
-  return {
-    nodes,
-    edges,
-    onNodesChange,
-    onEdgesChange,
-    executeGraph,
-    updateNodeValue,
-    updateMathsOperation,
-  };
-}
+// Helper function to create and execute a graph
+export const executeGraph = (graph: FlowGraph): ExecutionResults => {
+  const executor = new GraphExecutor(graph);
+  return executor.execute();
+};
