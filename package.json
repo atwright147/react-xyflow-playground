@@ -14,8 +14,10 @@
   "dependencies": {
     "@xyflow/react": "^12.3.6",
     "classnames": "^2.5.1",
+    "clsx": "^2.1.1",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "zustand": "^5.0.2"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
