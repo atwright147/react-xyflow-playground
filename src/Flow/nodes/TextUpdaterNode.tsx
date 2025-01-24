@@ -1,7 +1,7 @@
 import { type Node, Position, useReactFlow } from '@xyflow/react';
-import { type FC, useCallback, useState } from 'react';
+import { type FC, type JSX, useCallback, useState } from 'react';
 
-import type { CustomNodeData } from '../Flow';
+import type { CustomNodeData } from '../../../types/nodes';
 import { CustomHandle } from './CustomHandle';
 import styles from './node.module.scss';
 
@@ -9,7 +9,7 @@ type Props = Node<CustomNodeData, 'textUpdater'>;
 
 export const TextUpdaterNode: FC<Props> = ({ data, id }): JSX.Element => {
   const instance = useReactFlow();
-  const [value, setValue] = useState(data.value ?? '');
+  const [value, setValue] = useState(String(data.value) ?? '');
 
   const onChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {

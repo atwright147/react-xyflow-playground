@@ -1,3 +1,5 @@
+import type { JSX } from 'react';
+
 export const NodeItem = ({
   name,
   type,
@@ -6,7 +8,7 @@ export const NodeItem = ({
   name: string;
   type: string;
   onDragStart: (event: React.DragEvent) => void;
-}) => {
+}): JSX.Element => {
   const id = `${name}-${type}`;
 
   return (

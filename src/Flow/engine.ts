@@ -101,10 +101,10 @@ class GraphExecutor {
       }
 
       case 'timesTwo': {
-        const input = inputs['times-two-1-in'] ?? 0;
+        const input = inputs['timesTwo-in'] ?? 0;
         // Output both the original value and the doubled value
-        outputs['times-two-1-original'] = input;
-        outputs['times-two-1-timesTwo'] = input * 2;
+        outputs['timesTwo-original'] = input;
+        outputs['timesTwo-timesTwo'] = input * 2;
         break;
       }
 

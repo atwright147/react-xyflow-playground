@@ -1,7 +1,7 @@
 import { type Node, Position } from '@xyflow/react';
-import type { FC } from 'react';
+import type { FC, JSX } from 'react';
 
-import type { CustomNodeData } from '../Flow';
+import type { CustomNodeData } from '../../../types/nodes';
 import { CustomHandle } from './CustomHandle';
 
 import styles from './node.module.scss';

@@ -1,6 +1,6 @@
 import { Handle, type HandleProps } from '@xyflow/react';
 import classnames from 'classnames';
-import type { FC } from 'react';
+import type { FC, JSX } from 'react';
 
 import styles from './node.module.scss';
 
