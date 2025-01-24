@@ -9,7 +9,7 @@ type Props = Node<CustomNodeData, 'textUpdater'>;
 
 export const TextUpdaterNode: FC<Props> = ({ data, id }): JSX.Element => {
   const instance = useReactFlow();
-  const [value, setValue] = useState(data.value as string);
+  const [value, setValue] = useState(data.value ?? '');
 
   const onChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
