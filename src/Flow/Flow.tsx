@@ -1,7 +1,9 @@
-import { type HandleProps, type Position, ReactFlow } from '@xyflow/react';
+import { Grid, GridItem } from '@atwright147/react-layout';
+import { ReactFlow, type ReactFlowInstance } from '@xyflow/react';
 import clsx from 'clsx';
+import type { JSX } from 'react';
 import type React from 'react';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useShallow } from 'zustand/shallow';
 
 import { NodeItem } from '../components/NodeItem/NodeItem';
@@ -10,6 +12,7 @@ import { nodeTypes } from './nodes/node-types';
 
 export const Flow = (): JSX.Element => {
   const id = 'flow-droppable';
+  const [rfInstance, setRfInstance] = useState<ReactFlowInstance>();
 
   const {
     nodes,
@@ -35,6 +38,15 @@ export const Flow = (): JSX.Element => {
       setEdges: state.setEdges,
     })),
   );
+
+  const onSave = useCallback(() => {
+    if (rfInstance) {
+      const flow = rfInstance.toObject();
+      console.group('Saved Data');
+      console.info(JSON.stringify(flow));
+      console.groupEnd();
+    }
+  }, [rfInstance]);
 
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const onDragStart = (event: React.DragEvent, nodeType: any): void => {
@@ -82,9 +94,44 @@ export const Flow = (): JSX.Element => {
   );
 
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
-      <div>
-        <div className="grid flex-1 gap-4 p-4">
+    <Grid
+      as="section"
+      gap="16px"
+      gridTemplateColumns="1fr 300px"
+      style={{ width: '100vw', height: '100vh' }}
+    >
+      <GridItem>
+        <ReactFlow
+          id={id}
+          className={clsx('flowWrapper', 'dropTarget')}
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          onNodeMouseEnter={onNodeMouseEnter}
+          isValidConnection={isValidConnection}
+          onDrop={onDrop}
+          onDragEnd={(event) => {
+            event.preventDefault();
+            console.dir(event);
+          }}
+          onDragOver={(event) => {
+            event.preventDefault();
+          }} // biome-ignore lint/suspicious/noExplicitAny: just for now
+          nodeTypes={nodeTypes as any}
+          onInit={setRfInstance}
+        />
+      </GridItem>
+
+      <GridItem>
+        <section>
+          <h2>Admin</h2>
+          <button type="button" onClick={onSave}>Save</button>
+        </section>
+
+        <section>
+          <h2>Nodes</h2>
           {Object.entries(nodeTypes).map(([name, nodeType]) => {
             const type = nodeType.displayName ?? name;
             return (
@@ -98,30 +145,9 @@ export const Flow = (): JSX.Element => {
               />
             );
           })}
-        </div>
-      </div>
-
-      <ReactFlow
-        id={id}
-        className={clsx('flowWrapper', 'dropTarget')}
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        onNodeMouseEnter={onNodeMouseEnter}
-        isValidConnection={isValidConnection}
-        onDrop={onDrop}
-        onDragEnd={(event) => {
-          event.preventDefault();
-          console.dir(event);
-        }}
-        onDragOver={(event) => {
-          event.preventDefault();
-        }} // biome-ignore lint/suspicious/noExplicitAny: just for now
-        nodeTypes={nodeTypes as any}
-      />
-    </div>
+        </section>
+      </GridItem>
+    </Grid>
   );
 };
 Flow.displayName = 'Flow';
