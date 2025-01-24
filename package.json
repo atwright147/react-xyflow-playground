@@ -12,6 +12,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@atwright147/react-layout": "^0.0.5",
     "@xyflow/react": "^12.4.2",
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
