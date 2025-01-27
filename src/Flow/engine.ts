@@ -9,19 +9,19 @@ interface CustomNodeData extends Record<string, unknown> {
   operation?: string;
 }
 
-type NodeTypes = 'textUpdater' | 'maths' | 'timesTwo' | 'log';
+type NodeTypes = 'textUpdater' | 'maths' | 'timesTwo' | 'log' | 'concatenate';
 
 interface CustomNode extends Node<CustomNodeData> {
   type: NodeTypes;
 }
 
-interface NodeOutput {
-  [handle: string]: number;
+interface NodeInputAndOutput {
+  [handle: string]: number | string | string[] | number[] | boolean;
 }
 
 interface ExecutionResults {
-  allResults: Record<string, NodeOutput>;
-  finalOutputs: Record<string, NodeOutput>;
+  allResults: Record<string, NodeInputAndOutput>;
+  finalOutputs: Record<string, NodeInputAndOutput>;
 }
 
 export interface FlowGraph {
@@ -33,7 +33,7 @@ export interface FlowGraph {
 class GraphExecutor {
   private nodes: Map<string, CustomNode>;
   private edges: Edge[];
-  private executionResults: Map<string, NodeOutput>;
+  private executionResults: Map<string, NodeInputAndOutput>;
   private finalOutputs: Set<string>;
 
   constructor(graph: FlowGraph) {
@@ -43,8 +43,13 @@ class GraphExecutor {
     this.finalOutputs = new Set();
   }
 
-  private getNodeInputs(nodeId: string): Record<string, number> {
-    const inputs: Record<string, number> = {};
+  private getNodeInputs(
+    nodeId: string,
+  ): Record<string, number | string | string[] | number[] | boolean> {
+    const inputs: Record<
+      string,
+      number | string | string[] | number[] | boolean
+    > = {};
     const incomingEdges = this.edges.filter((edge) => edge.target === nodeId);
 
     for (const edge of incomingEdges) {
@@ -57,14 +62,14 @@ class GraphExecutor {
     return inputs;
   }
 
-  private executeNode(nodeId: string): NodeOutput {
+  private executeNode(nodeId: string): NodeInputAndOutput {
     const node = this.nodes.get(nodeId);
     if (!node) {
       throw new Error(`Node not found: ${nodeId}`);
     }
 
     const inputs = this.getNodeInputs(nodeId);
-    const outputs: NodeOutput = {};
+    const outputs: NodeInputAndOutput = {};
 
     switch (node.type) {
       case 'textUpdater': {
@@ -74,8 +79,8 @@ class GraphExecutor {
       }
 
       case 'maths': {
-        const a = inputs.a ?? 0;
-        const b = inputs.b ?? 0;
+        const a = Number(inputs.a ?? 0);
+        const b = Number(inputs.b ?? 0);
         let result: number;
 
         switch (node.data.operation) {
@@ -101,10 +106,19 @@ class GraphExecutor {
       }
 
       case 'timesTwo': {
-        const input = inputs['timesTwo-in'] ?? 0;
+        const input = Number(inputs['timesTwo-in'] ?? 0);
         // Output both the original value and the doubled value
         outputs['timesTwo-original'] = input;
         outputs['timesTwo-timesTwo'] = input * 2;
+        break;
+      }
+
+      case 'concatenate': {
+        const inputA = String(inputs['concatenate-input-a'] ?? '');
+        const inputB = String(inputs['concatenate-input-b'] ?? '');
+        const link = String(inputs['concatenate-link'] ?? '');
+
+        outputs['concatenate-out'] = [inputA, inputB].join(link);
         break;
       }
 

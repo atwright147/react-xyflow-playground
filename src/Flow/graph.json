@@ -3,58 +3,76 @@
     {
       "id": "textUpdater-1",
       "type": "textUpdater",
-      "position": { "x": 118, "y": 133 },
-      "data": { "label": "textUpdater node", "value": "10" },
-      "measured": { "width": 200, "height": 90 },
-      "selected": true
+      "position": { "x": 193, "y": 142 },
+      "data": { "label": "textUpdater node", "value": "Andy" },
+      "measured": { "width": 200, "height": 91 },
+      "selected": false
     },
     {
-      "id": "timesTwo-2",
-      "type": "timesTwo",
-      "position": { "x": 445, "y": 172 },
-      "data": { "label": "timesTwo node" },
-      "measured": { "width": 200, "height": 113 }
+      "id": "textUpdater-2",
+      "type": "textUpdater",
+      "position": { "x": 182, "y": 294 },
+      "data": { "label": "textUpdater node", "value": "Wright" },
+      "measured": { "width": 200, "height": 91 },
+      "selected": false,
+      "dragging": false
     },
     {
-      "id": "log-3",
-      "type": "log",
-      "position": { "x": 727, "y": 142 },
-      "data": { "label": "log node" },
-      "measured": { "width": 200, "height": 95 },
+      "id": "concatenate-3",
+      "type": "concatenate",
+      "position": { "x": 497, "y": 296 },
+      "data": { "label": "concatenate node" },
+      "measured": { "width": 200, "height": 137 },
       "selected": false,
       "dragging": false
     },
     {
       "id": "log-4",
       "type": "log",
-      "position": { "x": 731, "y": 267 },
-      "data": { "label": "log node" },
-      "measured": { "width": 200, "height": 95 },
+      "position": { "x": 760, "y": 334 },
+      "data": { "label": "log node", "value": "" },
+      "measured": { "width": 200, "height": 115 },
       "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "textUpdater-5",
+      "type": "textUpdater",
+      "position": { "x": 178, "y": 447 },
+      "data": { "label": "textUpdater node", "value": "___" },
+      "measured": { "width": 200, "height": 91 },
+      "selected": true,
       "dragging": false
     }
   ],
   "edges": [
     {
-      "source": "timesTwo-2",
-      "sourceHandle": "timesTwo-original",
-      "target": "log-3",
-      "targetHandle": "log-3",
-      "id": "xy-edge__timesTwo-2timesTwo-original-log-3log-3"
-    },
-    {
-      "source": "timesTwo-2",
-      "sourceHandle": "timesTwo-timesTwo",
+      "source": "concatenate-3",
+      "sourceHandle": "concatenate-out",
       "target": "log-4",
       "targetHandle": "log-4",
-      "id": "xy-edge__timesTwo-2timesTwo-timesTwo-log-4log-4"
+      "id": "xy-edge__concatenate-3concatenate-out-log-4log-4"
     },
     {
       "source": "textUpdater-1",
       "sourceHandle": "textUpdater-1",
-      "target": "timesTwo-2",
-      "targetHandle": "timesTwo-in",
-      "id": "xy-edge__textUpdater-1textUpdater-1-timesTwo-2timesTwo-in"
+      "target": "concatenate-3",
+      "targetHandle": "concatenate-input-a",
+      "id": "xy-edge__textUpdater-1textUpdater-1-concatenate-3concatenate-input-a"
+    },
+    {
+      "source": "textUpdater-2",
+      "sourceHandle": "textUpdater-2",
+      "target": "concatenate-3",
+      "targetHandle": "concatenate-input-b",
+      "id": "xy-edge__textUpdater-2textUpdater-2-concatenate-3concatenate-input-b"
+    },
+    {
+      "source": "textUpdater-5",
+      "sourceHandle": "textUpdater-5",
+      "target": "concatenate-3",
+      "targetHandle": "concatenate-link",
+      "id": "xy-edge__textUpdater-5textUpdater-5-concatenate-3concatenate-link"
     }
   ],
   "viewport": { "x": 0, "y": 0, "zoom": 1 }

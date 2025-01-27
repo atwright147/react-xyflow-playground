@@ -1,5 +1,6 @@
 import type { FC } from 'react';
 
+import { ConcatenateNode } from './ConcatenateNode';
 import { LogNode } from './LogNode';
 import { MathsNode } from './MathsNode';
 import { SourceNode } from './SourceNode';
@@ -11,7 +12,7 @@ export const nodeTypes: { [key: string]: FC<any> } = {
   textUpdater: TextUpdaterNode,
   source: SourceNode,
   target: SourceNode,
-  concatenate: SourceNode,
+  concatenate: ConcatenateNode,
   maths: MathsNode,
   log: LogNode,
   timesTwo: TimesTwoNode,
