@@ -9,6 +9,8 @@ import styles from './node.module.scss';
 type Props = Node<CustomNodeData, 'log'>;
 
 export const LogNode: FC<Props> = ({ data, id }): JSX.Element => {
+  data.value = data.value ?? '';
+
   return (
     <>
       <div className={styles.node} style={{ minWidth: '200px' }}>
@@ -34,7 +36,7 @@ export const LogNode: FC<Props> = ({ data, id }): JSX.Element => {
                   margin: '0',
                 }}
               >
-                {data.value}
+                {JSON.stringify(data.value, null, 2)}
               </pre>
             </div>
           </div>
