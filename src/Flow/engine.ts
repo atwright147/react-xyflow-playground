@@ -43,13 +43,8 @@ class GraphExecutor {
     this.finalOutputs = new Set();
   }
 
-  private getNodeInputs(
-    nodeId: string,
-  ): Record<string, number | string | string[] | number[] | boolean> {
-    const inputs: Record<
-      string,
-      number | string | string[] | number[] | boolean
-    > = {};
+  private getNodeInputs(nodeId: string): NodeInputAndOutput {
+    const inputs: NodeInputAndOutput = {};
     const incomingEdges = this.edges.filter((edge) => edge.target === nodeId);
 
     for (const edge of incomingEdges) {
@@ -124,7 +119,6 @@ class GraphExecutor {
 
       case 'log': {
         const logInput = inputs[node.id] ?? 0;
-        // console.log(`Log node ${nodeId}:`, logInput);
         outputs[node.id] = logInput;
         break;
       }
@@ -191,8 +185,11 @@ class GraphExecutor {
         // Add next nodes to queue
         const nextNodes = this.getNextNodes(currentNodeId);
         queue.push(...nextNodes);
-      } catch (error) {
-        throw new Error(`Error executing node ${currentNodeId}: ${error}`);
+      } catch (err) {
+        const error = err as Error;
+        throw new Error(
+          `Error executing node ${currentNodeId}: ${error.message}\nStack: ${error.stack}`,
+        );
       }
     }
 
@@ -226,10 +223,10 @@ class GraphExecutor {
           `Edge references non-existent target node: ${edge.target}`,
         );
       }
-      if (!edge.sourceHandle) {
+      if (!edge.sourceHandle || edge.sourceHandle === '') {
         throw new Error(`Edge from ${edge.source} is missing sourceHandle`);
       }
-      if (!edge.targetHandle) {
+      if (!edge.targetHandle || edge.targetHandle === '') {
         throw new Error(`Edge to ${edge.target} is missing targetHandle`);
       }
     }
@@ -256,7 +253,7 @@ class GraphExecutor {
 
     for (const nodeId of this.nodes.keys()) {
       if (hasCycle(nodeId)) {
-        throw new Error('Graph contains cycles');
+        throw new Error(`Graph contains cycles at node: ${nodeId}`);
       }
     }
   }
