@@ -5,9 +5,9 @@ import type { CustomNodeData } from '../../../types/nodes';
 import { CustomHandle } from './CustomHandle';
 import styles from './node.module.scss';
 
-type Props = Node<CustomNodeData, 'textUpdater'>;
+type Props = Node<CustomNodeData, 'value'>;
 
-export const TextUpdaterNode: FC<Props> = ({ data, id }): JSX.Element => {
+export const ValueNode: FC<Props> = ({ data, id }): JSX.Element => {
   const instance = useReactFlow();
   const [value, setValue] = useState(String(data.value) ?? '');
 

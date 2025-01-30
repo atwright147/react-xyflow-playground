@@ -9,7 +9,7 @@ interface CustomNodeData extends Record<string, unknown> {
   operation?: string;
 }
 
-type NodeTypes = 'textUpdater' | 'maths' | 'timesTwo' | 'log' | 'concatenate';
+type NodeTypes = 'value' | 'maths' | 'timesTwo' | 'log' | 'concatenate';
 
 interface CustomNode extends Node<CustomNodeData> {
   type: NodeTypes;
@@ -67,7 +67,7 @@ class GraphExecutor {
     const outputs: NodeInputAndOutput = {};
 
     switch (node.type) {
-      case 'textUpdater': {
+      case 'value': {
         // Text updater has a single output with the same handle as its id
         outputs[`${node.id}`] = node.data.value;
         break;

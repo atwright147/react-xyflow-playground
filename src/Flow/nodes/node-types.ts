@@ -4,12 +4,12 @@ import { ConcatenateNode } from './ConcatenateNode';
 import { LogNode } from './LogNode';
 import { MathsNode } from './MathsNode';
 import { SourceNode } from './SourceNode';
-import { TextUpdaterNode } from './TextUpdaterNode';
 import { TimesTwoNode } from './TimesTwoNode';
+import { ValueNode } from './ValueNode';
 
 // biome-ignore lint/suspicious/noExplicitAny: 🤷
 export const nodeTypes: { [key: string]: FC<any> } = {
-  textUpdater: TextUpdaterNode,
+  value: ValueNode,
   source: SourceNode,
   target: SourceNode,
   concatenate: ConcatenateNode,
