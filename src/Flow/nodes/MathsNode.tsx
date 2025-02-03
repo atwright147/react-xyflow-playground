@@ -1,5 +1,5 @@
 import { type Node, Position, useReactFlow } from '@xyflow/react';
-import { type FC, type JSX, useCallback, useState } from 'react';
+import { type FC, type JSX, useCallback, useEffect, useState } from 'react';
 
 import type { CustomNodeData } from '../../../types/nodes';
 import { CustomHandle } from './CustomHandle';
@@ -11,6 +11,25 @@ type Props = Node<CustomNodeData, 'maths'>;
 export const MathsNode: FC<Props> = ({ data, id }): JSX.Element => {
   const instance = useReactFlow();
   const [value, setValue] = useState(data.value as string);
+
+  useEffect(() => {
+    if (!data.operation) {
+      instance.setNodes((nodes) =>
+        nodes.map((node) => {
+          if (node.id === id) {
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                operation: 'add',
+              },
+            };
+          }
+          return node;
+        }),
+      );
+    }
+  }, [data.operation, id, instance]);
 
   const onChange = useCallback(
     (evt: React.ChangeEvent<HTMLSelectElement>) => {
